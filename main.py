@@ -7,7 +7,7 @@ CAL_PER_CARB_G = 4
 CAL_PER_FAT_G = 9
 CAL_PER_PROTEIN_G = 4
 PROTEIN_FOR_MUSCLE = 1  # gram per pound lean mass, post workout
-
+CAL_PER_SIRLOIN_OZ = 55 #  cooked sirloin beef
 
 def body_mass_index(weight, height):
     """Weight kg and height m"""
@@ -82,14 +82,14 @@ def burn_calories(caloric_deficit, mode="walk"):
     miles_needed = caloric_deficit / burn_rates_per_mile[mode]
     return round(miles_needed, 2)
 
-
+# 5'10 -> BI "healthy" weight is 167 max down to 132.
 
 
 def main():
     height = 5 + 10 / 12  # feet
     weight = 230  # LB
     age = 31
-    BMR = basal_metabolic_rate(weight * LB_TO_KG, height * FEET_TO_METERS / 100, age)
+    BMR = basal_metabolic_rate(weight * LB_TO_KG, height * FEET_TO_METERS * 100, age)
     BMI = body_mass_index(weight * LB_TO_KG, height * FEET_TO_METERS)
     print(f"BMR: {BMR:0.1f} calories at rest")
     print(f"BMI: {BMI:0.1f} {"overweight" if BMI > 25 else "Normal/Underweight"}")
@@ -98,19 +98,24 @@ def main():
     weight_per_period = float(input("How much weight in pounds do you want to lose? "))
     time_frame = float(input("Over how many weeks? "))
     pounds_per_week = weight_per_period/time_frame
-    print(f"You are aiming to lose {pounds_per_week:0.1f} pounds over {time_frame} weeks.")
+    print(f"You are aiming to lose {pounds_per_week:0.1f} pounds each week for {time_frame} weeks.")
     print(f"This equates to {pounds_per_week*FAT_TO_CALORIES:0.0f} calorie deficit per week.")
     daily_deficit = pounds_per_week*FAT_TO_CALORIES/7
     print(f"You must achieve a daily caloric defit of {daily_deficit:0.0f}")
     print(f"If you do not change your diet this means you need to add ")
-    print(f"Walk {burn_calories(daily_deficit, 'walk')} miles, {burn_calories(daily_deficit, 'walk')*15} min a day")
-    print(f"Run {burn_calories(daily_deficit, 'run')} miles, {burn_calories(daily_deficit, 'run')*12} min a day")
-    print(f"Bike {burn_calories(daily_deficit, 'bike')} miles, {burn_calories(daily_deficit, 'bike')*6} min a day")
+    print(f"Walk {burn_calories(daily_deficit, 'walk')} miles, {burn_calories(daily_deficit, 'walk')*15/60:0.1f} hr a day")
+    print(f"Run {burn_calories(daily_deficit, 'run')} miles, {burn_calories(daily_deficit, 'run')*12/60:0.1f} hr a day")
+    print(f"Bike {burn_calories(daily_deficit, 'bike')} miles, {burn_calories(daily_deficit, 'bike')*6/60:0.1f} hr a day")
+
+    print(f"With this, you would be at {weight-weight_per_period} lbs -> BMI {body_mass_index((weight-weight_per_period) * LB_TO_KG, height * FEET_TO_METERS):0.1f} {"overweight" if body_mass_index((weight-weight_per_period) * LB_TO_KG, height * FEET_TO_METERS) > 25 else "Normal/Underweight"}")
 
     print(f"Assuming you want to bike only 1 mile per day, you need to cut out {(burn_calories(daily_deficit, 'bike')-1)*daily_deficit/burn_calories(daily_deficit, 'bike'):0.0f} calories")
 
+
+    print(f"At a base rate, the minimum you should eat to maintain weight would be {BMR/CAL_PER_SIRLOIN_OZ:0.1f} oz of sirloin steak per day.")
+
     
-    print(f"Bicep Curl 1-rep max {one_rep_max(55+20,30)} lb")
+    # print(f"Bicep Curl 1-rep max {one_rep_max(55+20,30)} lb")
 
 if __name__ == "__main__":
     main()
